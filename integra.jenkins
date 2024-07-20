@@ -8,13 +8,44 @@ pipeline {
         }
         stage('Build') {
             steps {
-                sh 'gcc -o temperature_converter temperature_converter.c test.c'
+                script {
+                    try {
+                        bat 'gcc -o temperature_converter temperature_converter.c test.c'
+                    } catch (Exception e) {
+                        echo "Build failed: ${e.message}"
+                        currentBuild.result = 'FAILURE'
+                    }
+                }
             }
         }
         stage('Test') {
             steps {
-                sh 'temperature_converter'
+                script {
+                    try {
+                        bat 'temperature_converter'
+                        // Simula falha no teste
+                        bat 'echo Simulating test failure & exit /b 1'
+                    } catch (Exception e) {
+                        echo "Test failed: ${e.message}"
+                        // Define o resultado do build como "unstable" se os testes falharem
+                        currentBuild.result = 'UNSTABLE'
+                    }
+                }
             }
+        }
+    }
+    post {
+        always {
+            echo "Cleaning up after build"
+        }
+        success {
+            echo "Build and tests passed"
+        }
+        unstable {
+            echo "Build completed but some tests failed"
+        }
+        failure {
+            echo "Build failed"
         }
     }
 }
