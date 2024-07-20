@@ -8,12 +8,12 @@ pipeline {
         }
         stage('Build') {
             steps {
-                bat 'gcc -o temperature_converter temperature_converter.c test.c'
+                sh 'gcc -o temperature_converter temperature_converter.c test.c'
             }
         }
         stage('Test') {
             steps {
-                bat 'temperature_converter'
+                sh 'temperature_converter'
             }
         }
     }
