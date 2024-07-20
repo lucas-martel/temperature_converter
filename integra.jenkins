@@ -1,0 +1,20 @@
+pipeline {
+    agent any
+    stages {
+        stage('Checkout') {
+            steps {
+                git 'https://github.com/lucas-martel/temperature_converter.git'
+            }
+        }
+        stage('Build') {
+            steps {
+                sh 'gcc -o temperature_converter temperature_converter.c test.c'
+            }
+        }
+        stage('Test') {
+            steps {
+                sh './temperature_converter'
+            }
+        }
+    }
+}
